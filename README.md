@@ -1,8 +1,7 @@
 # sal1-notes
 Private notes for CyberSecurity101 / SOC Lv1 / SAL1
 
-以下をそのまま README.md に貼り付ければ、**目的・構成・更新ルール** が簡潔にまとまります。
-（あとで好きに追記／修正してください）
+目的・構成・更新ルール
 
 ```md
 # sal1-notes 🇯🇵
@@ -47,5 +46,6 @@ sal1-notes/
 > - 更新ルールは “自分用の To-Do” でもあるので、コマンド例を入れると迷いません。
 ::contentReference[oaicite:0]{index=0}
 ```
+
 
 
