@@ -1,7 +1,7 @@
 # sal1-notes
 Private notes for CyberSecurity101 / SOC Lv1 / SAL1
 
-目的・構成・更新ルール
+1. 目的・構成・更新ルール
 
 ```md
 # sal1-notes 🇯🇵
@@ -37,7 +37,7 @@ sal1-notes/
    git push
 ````
 
-3. 空フォルダを残したいときは `.gitkeep` を置く
+2. 空フォルダを残したいときは `.gitkeep` を置く
 
 ```
 
@@ -47,7 +47,7 @@ sal1-notes/
 ::contentReference[oaicite:0]{index=0}
 ```
 
-TL;DRとは
+3. TL;DRとは
 ```
 TL;DR は “Too Long; Didn’t Read” の省略形で、
 
