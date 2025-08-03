@@ -46,6 +46,8 @@ sal1-notes/
 > - 更新ルールは “自分用の To-Do” でもあるので、コマンド例を入れると迷いません。
 ::contentReference[oaicite:0]{index=0}
 ```
+
+TL;DRとは
 ```
 TL;DR は “Too Long; Didn’t Read” の省略形で、
 
