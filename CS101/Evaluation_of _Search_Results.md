@@ -1,25 +1,48 @@
-# ☑️ Quick-Ref: Networking & Crypto Terms
+# SAL1/Start\_Your\_Cyber\_Security\_Journey
 
-| Command / Term                           | What it is / Why you care                                     | Example invocation → trimmed output |
-|------------------------------------------|---------------------------------------------------------------|-------------------------------------|
-| **“Snake oil”**                          | Slang for bogus or un-vetted crypto schemes and products.     | N/A                                  |
-| **ss**                                   | Modern socket-stats tool replacing `netstat`. Faster (Netlink).| `ss -tunap` → `ESTAB 0 0 192.0.2.5:22 198.51.100.10:54213 sshd` |
-| **ip link show**                         | List NICs & state (iproute2).                                 | `2: eth0: <UP,LOWER_UP> mtu 1500 …` |
-| **ip addr show**                         | Display all IPv4/6 addresses on all interfaces.               | `inet 192.0.2.10/24 brd 192.0.2.255 scope global eth0` |
-| **ip -4 / -6 addr show**                 | Same as above, filtered to v4 or v6.                          | `inet6 2001:db8::1/64 scope global` |
-| **ip route show**                        | Current routing table (replaces `route -n`).                  | `default via 192.0.2.1 dev eth0` |
-| **ip route add default via <GW>**        | Set default gateway.                                          | (no stdout; `ip route show` confirms) |
-| **ip link set eth0 up / down**           | Bring interface up or down (replaces `ifconfig eth0 up`).     | (no stdout; `ip link show eth0` confirms) |
-| **ip addr add 192.0.2.20/24 dev eth0**   | Add a secondary IP to an interface.                           | (no stdout; shown by `ip addr show eth0`) |
-| **ip neighbour show**                    | ARP/NDP table (replaces `arp -na`).                           | `192.0.2.1 dev eth0 lladdr 00:aa:… REACHABLE` |
-| **tc qdisc show dev eth0**               | View QoS / traffic-control queue disciplines.                 | `qdisc fq_codel 0: root refcnt 2 limit 10240p …` |
-| **bridge link show**                     | Inspect bridge devices/ports.                                 | `3: veth0 state UP … master br0` |
+tags: \[search-skills, iproute2]
 
-> **Why iproute2?**  
-> - Consolidates `ifconfig`, `route`, `arp`, etc. into one syntax (`ip …`).  
-> - Talks to kernel via Netlink → faster & script-friendly (`-json`, `-brief`).  
-> - Continually maintained; supports VLANs, bonding, policy-based routing, etc.
+## TL;DR
 
-**Mini-mnemonic:** *“ip all day, ss for sockets, tc for traffic, bridge for bridges.”*
+* iproute2 tools (`ip`, `ss`, `tc`, `bridge`) replace legacy `net-tools` for faster, unified Linux network management.&#x20;
+* Google operators (`"exact phrase"`, `site:`, `filetype:`, `-`) slash noise and pinpoint sources for OSINT & research.&#x20;
+* Use Shodan/Censys for exposed assets, VirusTotal & HIBP for malware and breach checks.&#x20;
+* Track flaws with CVE IDs; hunt PoCs in Exploit-DB or GitHub for controlled testing.&#x20;
+* Remember: `ss` supersedes `netstat`; on Windows, `netstat -b` maps ports to binaries (admin required). &#x20;
 
-Happy hacking! 🐱‍💻
+## Quick-Ref: Core search & tooling
+
+| Command / Term   | What it is / Why you care                  | Example invocation → trimmed output                  |
+| ---------------- | ------------------------------------------ | ---------------------------------------------------- |
+| `ip`             | Unified interface/IP/route manager         | `ip addr show` → *eth0 192.0.2.10/24*                |
+| `ss`             | Modern socket viewer (netstat replacement) | `ss -tulnp` → *LISTEN 0 128 0.0.0.0:22 sshd*         |
+| `tc`             | Traffic shaping / QoS control              | `tc qdisc show` → *qdisc fq\_codel ...*              |
+| `"exact phrase"` | Google operator for precise matches        | `"passive reconnaissance"` → only exact-phrase pages |
+| `site:`          | Limit search to a domain                   | `site:tryhackme.com success stories` → THM blog only |
+| `filetype:`      | Search specific file types                 | `filetype:pdf cyber warfare report` → PDF reports    |
+| `-`              | Exclude a term                             | `pyramids -tourism` → ignores travel sites           |
+| `Shodan`         | Engine for internet-facing devices         | `apache 2.4.1` → host list & geo stats               |
+| `CVE-2024-3094`  | Standard ID for xz utils bug               | Lookup → summary + severity                          |
+| `VirusTotal`     | Multi-AV hash / URL scanner                | Hash search → *BitDefender: Gen.Variant.*            |
+| `netstat -b`     | Show owning EXE for each socket (Win)      | `netstat -anob` → *TCP 0.0.0.0:80 httpd.exe*         |
+| `snake oil`      | Slang for bogus crypto                     | N/A                                                  |
+
+## Gotchas
+
+* `netstat -b` needs elevated prompt; otherwise executables won’t show.&#x20;
+* Not all search engines honor every Google operator—verify support first.&#x20;
+* Shodan data may lag; confirm findings with direct scans before action.&#x20;
+* Exploit code from the internet can be unverified—test only on isolated labs.&#x20;
+* iproute2 commands can break connectivity; double-check interface names & syntax.&#x20;
+
+## References
+
+* iproute2 man page: [https://linux.die.net/man/8/ip](https://linux.die.net/man/8/ip)
+* Google advanced operators list
+* Shodan & Censys docs
+* CVE Program / NVD
+* Exploit-DB, VirusTotal, Have I Been Pwned
+
+### RAW NOTE
+
+Source: `1.SAL1 Note_ Start Your Cyber Security Journey.pdf`
