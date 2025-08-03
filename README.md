@@ -20,7 +20,7 @@ Private notes for CyberSecurity101 / SOC Lv1 / SAL1
 
 sal1-notes/
 ├─ CS101/      # Cyber Security 101 のメモ
-├─ SOC\_Lv1/    # SOC Level 1 のメモ
+├─ SOC\_Lv1/   # SOC Level 1 のメモ
 ├─ SAL1/       # Security Analyst Lv1 のメモ
 └─ assets/     # 画像や PDF
 ```
