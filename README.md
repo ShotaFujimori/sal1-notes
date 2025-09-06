@@ -14,6 +14,7 @@ Private notes for CyberSecurity101 / SOC Lv1 / SAL1
 
 ## 📁 ディレクトリ構成
 
+```text
 sal1-notes/
 ├─ CS101/      # Cyber Security 101 のメモ
 ├─ SOC_Lv1/    # SOC Level 1 のメモ
