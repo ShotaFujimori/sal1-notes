@@ -34,7 +34,6 @@ sal1-notes/
 > *ポイント*  
 > - 冒頭に目的を 1 行 → 構成を 1 行で書くと GitHub のトップページに抜粋が表示されます。  
 > - 更新ルールは “自分用の To-Do” でもあるので、コマンド例を入れると迷いません。
-::contentReference[oaicite:0]{index=0}
 
 3. TL;DRとは
 TL;DR は “Too Long; Didn’t Read” の省略形で、
