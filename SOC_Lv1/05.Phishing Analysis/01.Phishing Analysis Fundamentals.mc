@@ -1,0 +1,568 @@
+# 69.SAL1 — Phishing Analysis Fundamentals — Exam Cheat Sheet
+
+**Focus:** Email structure, delivery protocols, header analysis, body inspection, and phishing detection techniques for SOC analysts.
+
+---
+
+## TL;DR
+
+Phishing analysis requires understanding email anatomy, delivery protocols, and inspection techniques. Email addresses consist of username@domain with domain specifying the mail server. Email delivery uses SMTP for sending, POP3 for downloading to single device, and IMAP for multi-device syncing. Emails contain headers (metadata including sender, recipient, routing information) and body (message content in plain text or HTML). Header analysis via message source reveals originating IP, authentication results, and routing path. Body analysis includes HTML source inspection and base64 attachment decoding. Phishing types include spam, phishing, spear phishing, whaling, smishing, and vishing. Common phishing indicators are spoofed sender addresses, urgency messages, brand impersonation, grammar errors, generic content, hidden links, and malicious attachments. Defanging URLs prevents accidental clicks during analysis. Business Email Compromise uses legitimate compromised accounts for fraud. Lab analysis uses Thunderbird's View > Message Source (Ctrl+U) to examine raw email data.
+
+---
+
+## Email Address Anatomy
+
+Email addresses consist of three components separated by specific syntax determining routing and delivery.
+
+**Structure:**
+```
+username@domain.com
+
+Components:
+- username: User mailbox identifying specific recipient
+- @ symbol: Separates username from domain, tells system routing
+- domain: Mail server responsible for receiving message
+```
+
+**Example:**
+```
+david@tryhackme.com
+
+username: david
+domain: tryhackme.com
+```
+
+**Analogy:** Email address functions like postal mailing address where domain is the street/building and username is specific person/mailbox within that location.
+
+**Lab Answer:** Domain from hatsalesman@tryhatme.com is **tryhatme.com**
+
+---
+
+## Email Delivery Protocols
+
+Three protocols handle email transmission and retrieval, each serving distinct functions in email infrastructure.
+
+### SMTP (Simple Mail Transfer Protocol)
+
+**Purpose:** Sends emails from client to mail server and between mail servers
+
+**Function:** Handles outbound message transmission
+
+**Port:** TCP 25, 587 (submission), or 465 (SMTPS)
+
+**Usage:** When user clicks "Send" button, SMTP transmits message to mail server
+
+---
+
+### POP3 (Post Office Protocol version 3)
+
+**Purpose:** Downloads emails to single device
+
+**Characteristics:**
+- Emails downloaded and stored on single device
+- Sent messages stored on device from which sent
+- Emails accessible only from download device
+- Emails typically removed from server after download
+
+**Port:** TCP 110 (POP3) or 995 (POP3S)
+
+**Use Case:** User wants email stored locally on one computer without server dependency
+
+---
+
+### IMAP (Internet Message Access Protocol)
+
+**Purpose:** Syncs emails across multiple devices
+
+**Characteristics:**
+- Emails stored on server, downloadable to multiple devices
+- Sent messages stored on server
+- Messages sync across all devices
+- Emails remain on server unless explicitly deleted
+
+**Port:** TCP 143 (IMAP) or 993 (IMAPS)
+
+**Use Case:** User accesses email from phone, laptop, and tablet requiring synchronization
+
+**Lab Answers:**
+- Protocol sending email client to mail server: **SMTP**
+- Service looking up recipient domain's mail server: **DNS**
+- Bob accessing email from multiple devices: **IMAP**
+
+---
+
+## Email Journey Workflow
+
+Understanding email path from sender to recipient aids in header analysis and attack investigation.
+
+**Step-by-Step Flow:**
+
+**Step 1:** User sends email - Sender's email client sends message to their mail server using SMTP
+
+**Step 2:** Mail server queries DNS - Sending server asks DNS for recipient domain's mail server address
+
+**Step 3:** DNS responds - DNS returns recipient's mail server address (MX record)
+
+**Step 4:** Email delivered - Message sent across Internet to recipient's mail server
+
+**Step 5:** Recipient checks mailbox - Recipient's email client connects to their mail server
+
+**Step 6:** Email retrieved - Message downloaded (POP3) or synced (IMAP) to recipient's device
+
+---
+
+## Email Header Components
+
+Headers contain metadata crucial for phishing analysis including sender verification, routing path, and authentication results.
+
+**Basic Header Fields:**
+
+**From:** Sender's email address (can be spoofed)
+
+**To:** Receiver's email address
+
+**Reply-To:** Address where replies are sent (optional, often abused in phishing)
+
+**Subject:** Email's subject line
+
+**Date:** Time and date email was sent
+
+**Additional Analysis Fields:**
+
+**X-Originating-IP:** Source IP address of original sender
+
+**Received:** Chain of mail servers handling message (read bottom-to-top for chronological order)
+
+**Authentication-Results:** SPF, DKIM, DMARC validation results
+
+**Message-ID:** Unique identifier for email message
+
+**Return-Path:** Address for bounce messages
+
+---
+
+## Viewing Email Source
+
+Accessing raw email source reveals full headers and body structure for analysis.
+
+**Thunderbird Method:**
+```
+1. Open email in Thunderbird
+2. Navigate to View menu
+3. Select Message Source
+4. Shortcut: Ctrl+U
+```
+
+**What Source Reveals:**
+- Complete header fields
+- Routing path through mail servers
+- Authentication results
+- Raw HTML/text body
+- Base64-encoded attachments
+- Hidden metadata
+
+**Lab Answers (email1.eml):**
+- Full subject line: **Help protect your budget by protecting your home**
+- X-Originating-IP: **43.255.56.161**
+
+---
+
+## Email Body Analysis
+
+Email bodies contain message content and embedded elements requiring inspection for threat detection.
+
+### HTML Source Inspection
+
+**Purpose:** Examine underlying HTML structure revealing hidden links, tracking pixels, and obfuscated content
+
+**Method:**
+```
+View message source to see raw HTML
+Look for:
+- <a href=""> tags (hyperlinks)
+- <img src=""> tags (images, tracking pixels)
+- <script> tags (JavaScript, usually suspicious)
+- Obfuscated or encoded content
+```
+
+**Common Findings:**
+- Display text differs from actual href destination
+- External image loading for tracking
+- Hidden iframes
+- Encoded JavaScript
+
+---
+
+### Attachment Analysis
+
+Attachments embedded in emails as base64-encoded data requiring extraction and analysis.
+
+**Attachment Headers:**
+```
+Content-Type: Specifies file type (e.g., application/pdf)
+Content-Disposition: Indicates attachment with filename
+Content-Transfer-Encoding: Shows encoding method (usually base64)
+```
+
+**Extraction Process:**
+```
+1. View message source
+2. Locate base64-encoded attachment data
+3. Copy base64 string
+4. Decode using:
+   - CyberChef (https://gchq.github.io/CyberChef/)
+   - Base64 to PDF converter
+   - Command line: base64 -d input.txt > output.pdf
+```
+
+**Example:**
+```
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="zmqpalgh.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJeLjz9MKMyAwIG9iago8PC9UeXBlIC9QYWdlCi9QYXJlbnQgMSAwIFIKL01l...
+(base64 continues)
+```
+
+**Lab Answers (email2.txt):**
+- Content-Type: **application/pdf**
+- Attachment name: **zmqpalgh.pdf**
+- Hidden flag: **THM{BENIGN_PDF_ATTACHMENT}**
+
+---
+
+## Phishing Types Classification
+
+Understanding different phishing categories aids in threat classification and response prioritization.
+
+### Spam
+
+**Definition:** Unsolicited bulk emails sent to large number of recipients
+
+**Characteristics:** Usually commercial, low sophistication, mass distribution
+
+**Variant:** Malspam - malicious spam containing malware or phishing links
+
+---
+
+### Phishing
+
+**Definition:** Emails impersonating trusted entities tricking recipients into revealing sensitive information
+
+**Goal:** Credential theft, malware delivery, financial fraud
+
+**Scope:** Broad, non-targeted attacks
+
+---
+
+### Spear Phishing
+
+**Definition:** Targeted phishing aimed at specific individual or organization using personalized information
+
+**Characteristics:**
+- Researched targeting
+- Personalized content
+- Higher success rate
+- Often precedes advanced attacks
+
+---
+
+### Whaling
+
+**Definition:** Spear phishing specifically targeting high-level executives (CEO, CFO, Board members)
+
+**Goal:** Obtain sensitive data, financial access, or authorization for fraudulent transactions
+
+**Impact:** High-value targets with significant organizational consequences
+
+---
+
+### Smishing
+
+**Definition:** Phishing attacks conducted via SMS or text messages
+
+**Platform:** Mobile devices
+
+**Examples:** Fake delivery notifications, bank alerts, account verification requests
+
+---
+
+### Vishing
+
+**Definition:** Phishing attacks through voice calls using social engineering
+
+**Technique:** Phone-based social engineering
+
+**Examples:** Fake tech support, IRS scams, bank fraud calls
+
+---
+
+### Business Email Compromise (BEC)
+
+**Definition:** Attack where adversary gains access to legitimate internal email account and uses it to trick others into unauthorized or fraudulent actions
+
+**Characteristics:**
+- Uses compromised legitimate account
+- High trust level
+- Often involves financial transactions
+- Difficult to detect with traditional email security
+
+**Lab Answer:** BEC stands for **Business Email Compromise**
+
+---
+
+## Phishing Indicators
+
+Common characteristics enabling phishing email identification during analysis.
+
+### Spoofed From Address
+
+**Indicator:** Sender's email appears as trusted entity but domain is misspelled or incorrect
+
+**Examples:**
+```
+Legitimate: noreply@microsoft.com
+Spoofed: noreply@microsof.com (missing 't')
+Spoofed: noreply@microsoft-support.net (wrong domain)
+```
+
+---
+
+### Urgent Subject or Message
+
+**Indicator:** Creates artificial time pressure forcing hasty decisions
+
+**Examples:**
+- "Your account will be locked in 24 hours"
+- "Immediate action required"
+- "Verify your account now or lose access"
+- "Urgent: Suspicious activity detected"
+
+---
+
+### Brand Impersonation
+
+**Indicator:** Email design mimics legitimate organization with logos and colors
+
+**Detection:** Check sender domain, not just display name or branding
+
+---
+
+### Grammar & Spelling Issues
+
+**Indicator:** Message contains errors though AI reduces this indicator
+
+**Examples:**
+- Awkward phrasing
+- Unnatural wording
+- Translation artifacts
+- Inconsistent capitalization
+
+**Note:** Modern AI-generated phishing may have perfect grammar
+
+---
+
+### Generic Content
+
+**Indicator:** Message lacks personalization suggesting mass distribution
+
+**Examples:**
+- "Dear Customer" instead of name
+- "Valued User"
+- "Account Holder"
+
+---
+
+### Hidden or Shortened Links
+
+**Indicator:** Hyperlinks disguise true destination
+
+**Examples:**
+```
+Display text: "Click here to verify account"
+Actual destination: bit.ly/secure-login
+OR
+Display: microsoft.com
+Actual href: malicious-site.com
+```
+
+**Detection Method:**
+```
+Hover over link without clicking (in safe environment)
+View HTML source to see actual href value
+Use URL expansion tools for shortened links
+```
+
+---
+
+### Malicious Attachments
+
+**Indicator:** Attachments disguised as legitimate files
+
+**Common Techniques:**
+```
+Double extensions: invoice.pdf.exe
+Archive files: documents.zip containing malware
+Macro-enabled documents: report.docm
+Disguised executables: photo.jpg.exe
+```
+
+---
+
+## URL Defanging
+
+Making URLs, domains, and email addresses unclickable preventing accidental clicks during analysis.
+
+**Method:** Replace special characters with alternate characters
+
+**Examples:**
+```
+Original URL: http://www.suspiciousdomain.com
+Defanged URL: hxxp[://]www[.]suspiciousdomain[.]com
+
+Original IP: 192.168.1.100
+Defanged IP: 192[.]168[.]1[.]100
+
+Original Email: attacker@malicious.com
+Defanged Email: attacker[@]malicious[.]com
+```
+
+**Common Replacements:**
+- http → hxxp
+- https → hxxps
+- . → [.]
+- @ → [@]
+- :// → [://]
+
+---
+
+## Practical Analysis Workflow
+
+Systematic approach to phishing email investigation using Thunderbird and manual inspection.
+
+### Step 1: Initial Assessment
+
+```
+1. Open email in Thunderbird (do not click links or attachments)
+2. Review visible headers: From, To, Subject, Date
+3. Note any immediate red flags (urgency, suspicious sender)
+```
+
+---
+
+### Step 2: Header Analysis
+
+```
+1. View message source (Ctrl+U)
+2. Extract key fields:
+   - X-Originating-IP: Source IP address
+   - Received: Trace routing path
+   - Authentication-Results: SPF/DKIM/DMARC status
+   - Reply-To: Check if differs from From address
+   - Return-Path: Verify bounce address
+```
+
+---
+
+### Step 3: Body Inspection
+
+```
+1. Examine rendered content for phishing indicators
+2. View HTML source to reveal:
+   - Actual link destinations
+   - Hidden elements
+   - Tracking pixels
+   - Obfuscated content
+```
+
+---
+
+### Step 4: Link Analysis
+
+```
+1. Hover over links (without clicking) to preview destination
+2. View source to extract actual href values
+3. Defang URLs for safe documentation
+4. Check URL reputation using threat intelligence
+```
+
+---
+
+### Step 5: Attachment Handling
+
+```
+1. Identify attachment type from Content-Type
+2. Note filename from Content-Disposition
+3. Extract base64-encoded data if analysis required
+4. Decode using CyberChef or base64 tools
+5. Analyze decoded file in sandbox environment
+```
+
+---
+
+### Step 6: Attribution and Reporting
+
+```
+1. Document all findings
+2. Classify phishing type
+3. Extract IOCs (IPs, domains, hashes)
+4. Report to security team
+5. Block identified threats
+```
+
+---
+
+## Lab Analysis Example (email3.eml)
+
+Practical application of analysis techniques to real phishing sample.
+
+**Investigation Questions:**
+
+**Spoofed Organization:** **Home Depot**
+- Brand impersonation detected through visual inspection
+
+**Sender's Email:** **support@teckbe.com**
+- Domain "teckbe.com" not associated with Home Depot
+
+**Defanged X-Originating-IP:** **103[.]234[.]236[.]83**
+- Found in message source headers
+
+**Mail Server (Authentication-Results):** **atlas102.free.mail.gq1.yahoo.com**
+- Identified in header analysis showing Yahoo mail infrastructure
+
+---
+
+## Critical Exam Points
+
+Phishing analysis requires understanding email structure, protocols, and inspection techniques. Email addresses consist of username@domain. SMTP sends emails, POP3 downloads to single device, IMAP syncs across multiple devices. DNS resolves recipient domain's mail server. Email headers contain metadata for analysis accessed via View > Message Source (Ctrl+U in Thunderbird). Key header fields include From, To, Reply-To, Subject, Date, X-Originating-IP, Received, and Authentication-Results. Email body contains plain text or HTML inspected for hidden elements. Attachments base64-encoded with Content-Type, Content-Disposition, and Content-Transfer-Encoding headers. Phishing types include spam, phishing, spear phishing, whaling, smishing, vishing, and BEC. Common indicators are spoofed addresses, urgency, brand impersonation, grammar errors, generic content, hidden links, and malicious attachments. URL defanging replaces special characters preventing accidental clicks. CyberChef and base64 converters decode attachments. BEC uses compromised legitimate accounts for fraud. Analysis workflow includes initial assessment, header analysis, body inspection, link analysis, attachment handling, and attribution reporting.
+
+---
+
+## Common Pitfalls
+
+**Clicking Links During Analysis:** Accidentally clicking malicious links during investigation activates threats. Always work in isolated analysis environment or view message source rather than rendered email. Use link preview features without clicking. When extracting links for analysis, immediately defang them to prevent accidental clicks during documentation or sharing with team.
+
+**Trusting Display Names:** Email display names are easily spoofed. "From: Microsoft Security <noreply@microsoft.com>" may actually be "From: Microsoft Security <attacker@malicious.com>". Always verify sender's actual email address in headers, not just display name visible in email client. View raw source to see true sender domain.
+
+**Overlooking Reply-To Discrepancies:** Attackers often set Reply-To address different from From address. Victim receives email appearing from legitimate source but replies go to attacker-controlled address. Always check if Reply-To differs from From address during header analysis as this is strong phishing indicator.
+
+**Insufficient Header Analysis:** Examining only From, To, and Subject fields misses critical information. X-Originating-IP reveals source location. Received headers show routing path identifying suspicious relays. Authentication-Results reveals SPF/DKIM/DMARC failures indicating spoofing. Return-Path may differ from From address showing forgery.
+
+**Ignoring Authentication Results:** SPF, DKIM, and DMARC failures are strong spoofing indicators but often overlooked. Authentication-Results header shows whether sending domain authorized the mail server (SPF), message integrity verified (DKIM), and sender policy compliance (DMARC). Multiple authentication failures strongly suggest phishing.
+
+**Mishandling Attachments:** Opening attachments directly on analysis workstation risks compromise. Always extract base64-encoded attachments from source and analyze in sandbox environment or using automated tools. Never double-click attachments even if they appear benign. Use hash lookups, sandbox analysis, and static analysis before opening.
+
+**Missing Encoded Content:** Phishing emails often contain base64-encoded text or obfuscated JavaScript in HTML body. Viewing only rendered version misses this hidden content. Always inspect HTML source for suspicious encoding, obfuscation, or hidden scripts that don't appear in normal view.
+
+**URL Shortener Blindness:** Shortened URLs (bit.ly, tinyurl) hide actual destination. Victims cannot determine true destination before clicking. During analysis, expand shortened URLs using expansion services or viewing redirect chain before categorizing threat. Never click shortened links directly to see destination.
+
+**Inadequate Documentation:** Failing to defang URLs and IPs during documentation creates risk when sharing findings with team or in reports. Someone may accidentally click active links in incident reports. Always defang all IOCs immediately upon extraction for safe sharing and documentation.
+
+**Timestamp Confusion:** Email Date header can be forged. Use Received headers for accurate timestamps showing when each mail server processed message. Read Received headers bottom-to-top for chronological order. Discrepancies between Date header and Received timestamps may indicate manipulation.
+
+---
+
+# Reference
+
+**File Name:** 69.SLA1 Note_ Phishing Analysis - Phishing Analysis Fundamentals - .pdf
