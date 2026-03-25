@@ -1,0 +1,282 @@
+# Phishing Emails in Action — Exam Prep Cheat Sheet
+
+A table-heavy exam-prep version of the phishing analysis exercise.  
+Focus areas: sender verification, link analysis, tracking pixels, attachment abuse, redirection chains, and credential harvesting. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Table of Contents
+
+- [TL;DR](#tldr)
+- [Exam-Focused Summary Table](#exam-focused-summary-table)
+- [Core Analysis Workflow](#core-analysis-workflow)
+- [Task-by-Task Breakdown](#task-by-task-breakdown)
+- [Red Flags Table](#red-flags-table)
+- [Link Analysis Table](#link-analysis-table)
+- [Attachment Analysis Table](#attachment-analysis-table)
+- [Credential Harvesting Table](#credential-harvesting-table)
+- [Tracking Pixel Table](#tracking-pixel-table)
+- [IOC Table](#ioc-table)
+- [Gotchas](#gotchas)
+- [Likely Exam Questions](#likely-exam-questions)
+- [Quick Recall Sheet](#quick-recall-sheet)
+- [Reference](#reference)
+
+---
+
+## TL;DR
+
+- Always verify the **real sender**, not just the display name.
+- Check **headers**, **HTML/source**, and **actual link destinations**.
+- Watch for **URL shortening**, **tracking pixels**, and **multi-stage redirects**.
+- Treat **PDF**, **.dot**, and **.xlsx** attachments as suspicious if they do not match the context.
+- Look for signs of **credential harvesting** and **brand impersonation**.
+- Common indicators include **urgency**, **BCC**, **sender mismatch**, and **context inconsistencies**.
+- Never directly interact with suspicious links, domains, IPs, or attachments. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Exam-Focused Summary Table
+
+| Topic | What to Check | Why It Matters | Example from Exercise | Exam Keyword |
+|---|---|---|---|---|
+| Sender verification | Real sender vs display name | Detects spoofing | `service@paypal.com` vs `gibberish@sultanbogor.com` | Spoofed sender |
+| Recipient analysis | `To` / `BCC` fields | Reveals bulk phishing behavior | Victim hidden or not directly addressed | BCC |
+| Link inspection | Real destination URL | Finds hidden malicious domains | `devret[.]xyz` | Link manipulation |
+| URL shortening | Shortened links | Hides final destination | Shortened PayPal-themed link | URL obfuscation |
+| Tracking pixels | Hidden images in HTML | Confirms email open activity | `Tracking.png` | Tracking pixel |
+| Redirect chains | Multi-step redirect flow | Hides phishing page behind trusted branding | Microsoft / OneDrive / Adobe chain | Redirection |
+| Credential theft | Fake login portals | Steals usernames and passwords | Outlook-style fake login | Credential harvesting |
+| PDF abuse | Embedded links in PDF | Delivers phishing via attachment | Netflix-themed PDF | Embedded link |
+| `.dot` abuse | Suspicious template file | Unusual attachment type | Apple-themed `.dot` | Malicious template |
+| `.xlsx` abuse | Spreadsheet leading to payload | Used for malware delivery | DHL-themed `.xlsx` → `regasms.exe` | Payload delivery | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Core Analysis Workflow
+
+| Step | Action / Check | Goal | Expected Output |
+|---|---|---|---|
+| 1 | Verify sender | Confirm true origin | Real sender address |
+| 2 | Check recipient fields | Spot BCC or mass targeting | Suspicious addressing |
+| 3 | Review subject/body | Detect urgency/social engineering | Pressure wording |
+| 4 | Inspect source/HTML | Reveal hidden elements | Real URLs / tracking pixel |
+| 5 | Analyze links safely | Avoid direct interaction | Destination domain |
+| 6 | Trace redirects | Find final phishing page | Redirect chain |
+| 7 | Inspect attachments | Identify lure or payload | Suspicious file behavior |
+| 8 | Determine objective | Theft vs malware delivery | Attack intent |
+| 9 | Record IOCs | Support reporting and escalation | Defanged indicators | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Task-by-Task Breakdown
+
+### Task Summary Table
+
+| Task | Theme | Main Technique | Main Red Flag | Main Lesson |
+|---|---|---|---|---|
+| Task 2 | PayPal order cancelation | Sender spoofing + URL shortening | Fake sender and obfuscated link | Do not trust brand display alone |
+| Task 3 | Package tracking | Link manipulation + tracking pixel | Hidden destination and open tracking | Opening email may leak activity |
+| Task 4 | Document sharing | Multi-stage redirect + fake login | Trusted brands used in redirect chain | Brand logos do not prove legitimacy |
+| Task 5 | Netflix billing | PDF attachment with embedded phishing link | Fake payment update via PDF | Attachments may only be lure containers |
+| Task 6 | Apple purchase notice | Blank body + `.dot` attachment + BCC | Unusual file type and hidden addressing | Context mismatch is a strong signal |
+| Task 7 | DHL shipment | `.xlsx` attachment leading to payload | Spreadsheet used for malware delivery | Phishing can end in executable payload | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### Task 2 — Cancel Your Order (PayPal)
+
+| Field | Details |
+|---|---|
+| Theme | PayPal impersonation |
+| Main checks | Sender mismatch, urgency, shortened link |
+| Key example | `service@paypal.com` vs `gibberish@sultanbogor.com` |
+| Main technique | URL obfuscation |
+| Exam answer idea | A trusted display name is not enough; verify the real sender and actual link destination. |
+
+### Task 3 — Track Your Package
+
+| Field | Details |
+|---|---|
+| Theme | Fake shipping notification |
+| Main checks | Link destination, tracking pixel, sender domain |
+| Key example | `Tracking.png`, `devret[.]xyz`, `contact@beginpro.club` |
+| Main technique | Link manipulation + tracking |
+| Exam answer idea | A phishing email may both lure the victim and notify the attacker when it is opened. |
+
+### Task 4 — Download Document Here
+
+| Field | Details |
+|---|---|
+| Theme | Fake document-sharing workflow |
+| Main checks | Redirect sequence, branding abuse, login prompt |
+| Key example | Microsoft / OneDrive / Adobe-style redirect path |
+| Main technique | Multi-stage redirection to credential harvesting |
+| Exam answer idea | Trusted branding in redirect steps does not make the final page legitimate. |
+
+### Task 5 — Your Account Is on Hold
+
+| Field | Details |
+|---|---|
+| Theme | Netflix billing lure |
+| Main checks | PDF attachment, embedded link, payment urgency |
+| Key example | `Update Payment Account` in PDF |
+| Main technique | Attachment-based phishing |
+| Exam answer idea | PDFs can be used to deliver phishing links, not just information. |
+
+### Task 6 — Your Recent Purchase
+
+| Field | Details |
+|---|---|
+| Theme | Apple-themed fake purchase notice |
+| Main checks | Blank body, `.dot` attachment, BCC |
+| Key example | Suspicious Microsoft Word template file |
+| Main technique | Attachment abuse with weak context fit |
+| Exam answer idea | A blank-body transactional email with a `.dot` file is highly suspicious. |
+
+### Task 7 — Scheduled Shipment
+
+| Field | Details |
+|---|---|
+| Theme | DHL-themed malware delivery |
+| Main checks | `.xlsx` attachment, payload execution chain |
+| Key example | `regasms.exe` |
+| Main technique | Spreadsheet-to-payload delivery |
+| Exam answer idea | Phishing may aim at malware execution, not only credential theft. | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Red Flags Table
+
+| Red Flag | What It Looks Like | Why It Is Suspicious | Example |
+|---|---|---|---|
+| Sender mismatch | Display name does not match real sender | Brand spoofing | Fake PayPal sender |
+| BCC usage | User missing from `To` field | Mass phishing indicator | Hidden recipients |
+| Urgency | “Action Required”, “Account On Hold” | Pressures quick reaction | Billing / shipment alert |
+| Blank body | Empty message with only attachment | Avoids content-based detection / shifts lure to file | Apple-themed sample |
+| Wrong file type | Template or spreadsheet in odd context | File does not fit business purpose | `.dot` / `.xlsx` |
+| Hidden link target | Button text differs from destination | Link manipulation | Tracking or payment link |
+| Mixed context | Geography/language mismatch | Template reuse or fraud | German domain + Indian address + Mandarin text |
+| Brand-heavy design | Strong logos and HTML branding | Designed to create trust | Microsoft / DHL / PayPal styling | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Link Analysis Table
+
+| Check | What to Look For | Why It Matters | Example |
+|---|---|---|---|
+| Visible text vs real URL | Does the destination match the label? | Finds disguised links | Fake button destination |
+| URL shortener | Is the link shortened? | Final destination is hidden | PayPal-themed shortened URL |
+| Root domain | What is the real domain? | Brand name in text may be fake | `devret[.]xyz` |
+| Redirect chain | Does it bounce through multiple pages? | Hides the final phishing site | Microsoft / OneDrive / Adobe chain |
+| Safe investigation | Can you inspect without clicking? | Reduces analyst risk | Use `WhereGoes` | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Attachment Analysis Table
+
+| File Type | How It Was Used | Risk | Example | Exam Takeaway |
+|---|---|---|---|---|
+| PDF | Embedded phishing link | Credential theft | Netflix-themed PDF | PDFs can hide phishing URLs |
+| `.dot` | Suspicious template attachment | Redirect to phishing site | Apple-themed `.dot` | File type should match context |
+| `.xlsx` | Spreadsheet tied to payload delivery | Malware execution | DHL-themed `.xlsx` | Office files can deliver payloads |
+| Executable | Final malicious payload | Persistence / theft / ransomware | `regasms.exe` | Escalate immediately if executable appears | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Credential Harvesting Table
+
+| Indicator | Description | Why It Matters | Example |
+|---|---|---|---|
+| Fake login page | Looks like a trusted login portal | Used to steal credentials | Outlook-style fake page |
+| Trusted branding | Microsoft / Adobe / OneDrive visuals | Builds false trust | Branded redirect sequence |
+| Generic error after login | User enters valid credentials but gets error | Data already collected | Fake auth portal behavior |
+| Email-driven login flow | Login reached from email link | Higher phishing risk | “Download document” lure | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Tracking Pixel Table
+
+| Item | Description | Why It Matters | Example |
+|---|---|---|---|
+| Tracking pixel | Hidden image in email HTML | Tells attacker the email was opened | `Tracking.png` |
+| Open tracking | Recipient activity confirmation | Confirms active mailbox | Open event signal |
+| Mail-client mitigation | Some providers block images/links | Can reduce accidental interaction | Yahoo-style protection noted in material | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## IOC Table
+
+| IOC Type | Value | Description |
+|---|---|---|
+| Domain | `devret[.]xyz` | Malicious root domain from manipulated link |
+| Email | `gibberish@sultanbogor.com` | Actual sender in fake PayPal email |
+| Email | `contact@beginpro.club` | Sender in fake shipping email |
+| Email | `z99@musacombi.online` | Sender behind fake “Netllx billing” |
+| File | `Tracking.png` | Tracking pixel resource |
+| File | `regasms.exe` | Malicious executable payload | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Gotchas
+
+| Gotcha | Why It Tricks People | Correct Response |
+|---|---|---|
+| Trusted display name | Looks official at first glance | Check the real sender |
+| Shortened links | Hide the destination | Trace safely, do not click |
+| Blank-body email | Looks minimal and clean | Inspect attachment and headers |
+| PDF attachment | Often assumed safe | Check for embedded links |
+| Good grammar | Can appear legitimate | Do not rely only on typos |
+| Famous logos | Create instant trust | Validate domain and redirect path |
+| Opening the email | May trigger tracking | Avoid loading remote content |
+| BCC usage | Easy to overlook | Review recipient handling | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Likely Exam Questions
+
+### 1. What is the first thing to verify in a phishing email?
+**Answer:** Verify the real sender address, not just the display name. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 2. Why are URL shorteners dangerous in phishing analysis?
+**Answer:** They hide the final destination and make malicious links harder to identify. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 3. What is a tracking pixel?
+**Answer:** A hidden image embedded in an email that alerts the attacker when the email is opened. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 4. Why is BCC suspicious in phishing emails?
+**Answer:** It may indicate a mass phishing campaign where recipients are hidden. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 5. What is credential harvesting?
+**Answer:** A phishing technique that tricks victims into entering usernames and passwords into a fake login page. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 6. Why is a `.dot` attachment suspicious in a purchase email?
+**Answer:** A Word template does not fit the expected context of a receipt or purchase confirmation. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 7. What does `regasms.exe` represent in the exercise?
+**Answer:** A malicious executable payload delivered through the phishing chain. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+### 8. Why are multi-stage redirects effective for attackers?
+**Answer:** They hide the final phishing page behind trusted-looking intermediary pages and branding. [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Quick Recall Sheet
+
+| Prompt | Fast Answer |
+|---|---|
+| Display name trusted? | Not enough |
+| First check? | Real sender |
+| Hidden recipients? | BCC |
+| Hidden destination? | Link manipulation |
+| Hidden final URL? | URL shortener |
+| Hidden open notification? | Tracking pixel |
+| Fake login page? | Credential harvesting |
+| Suspicious attachment types? | PDF / `.dot` / `.xlsx` |
+| Payload example? | `regasms.exe` |
+| Safe reporting format? | Defanged IOC | [Source](https://www.genspark.ai/api/files/s/XGYe0Whz)
+
+---
+
+## Reference
+
+### File Name
+- `70.SLA1 Note_ Phishing Analysis - Phishing Emails in Action.pdf`
