@@ -10,7 +10,7 @@ Private notes for CyberSecurity101 / SOC Lv1 / SAL1
 - **SOC Level 1**  
 - **Security Analyst Level 1 (SAL1)**  
 
-で作成したチートシート & ラボ手順書をモジュール別に保存する “私的まとめノート” です。
+で作成したリファレンスシート & ラボ手順書をモジュール別に保存する “私的まとめノート” です。
 
 ## 📁 ディレクトリ構成
 
